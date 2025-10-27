@@ -63,6 +63,23 @@ let times = [];
 let heights = [];
 let velocities = [];
 
+function buildYPoints() {
+  // 轉成 {x, y}，讓 x 使用線性座標
+  const pts = [];
+  for (let i = 0; i < times.length; i++) {
+    pts.push({ x: times[i], y: heights[i] });
+  }
+  return pts;
+}
+
+function buildVPoints() {
+  const pts = [];
+  for (let i = 0; i < times.length; i++) {
+    pts.push({ x: times[i], y: velocities[i] });
+  }
+  return pts;
+}
+
 function estimateFallTime(hVal, gVal) {
   // 自由落體理論解：t = sqrt(2h/g)
   if (gVal <= 0) return 1;
@@ -77,16 +94,15 @@ function ensureCharts() {
   const tMax = estimateFallTime(h, g);
   console.log("Estimated fall time:", tMax);
 
-  // y-t chart
+  // y-t chart（使用線性 x 軸 + {x,y} 資料點）
   if (!ytChart) {
     ytChart = new Chart(ytCanvas.getContext("2d"), {
       type: "line",
       data: {
-        labels: times,
         datasets: [
           {
             label: "y (m)",
-            data: heights,
+            data: buildYPoints(),
             borderColor: "#e91e63",
             backgroundColor: "rgba(233,30,99,0.15)",
             pointRadius: 0,
@@ -100,6 +116,7 @@ function ensureCharts() {
         animation: true,
         scales: {
           x: {
+            type: "linear",
             title: { display: true, text: "t (s)" },
             min: 0,
             max: Math.max(1, tMax),
@@ -118,16 +135,15 @@ function ensureCharts() {
     ytChart.options.scales.y.max = Math.max(1, h);
   }
 
-  // v-t chart
+  // v-t chart（使用線性 x 軸 + {x,y} 資料點）
   if (!vtChart) {
     vtChart = new Chart(vtCanvas.getContext("2d"), {
       type: "line",
       data: {
-        labels: times,
         datasets: [
           {
             label: "v (m/s)",
-            data: velocities,
+            data: buildVPoints(),
             borderColor: "#2196f3",
             backgroundColor: "rgba(33,150,243,0.15)",
             pointRadius: 0,
@@ -141,6 +157,7 @@ function ensureCharts() {
         animation: true,
         scales: {
           x: {
+            type: "linear",
             title: { display: true, text: "t (s)" },
             min: 0,
             max: Math.max(1, tMax),
@@ -191,10 +208,8 @@ function resetSimulation(newH, newG) {
   velocities = [velocity.y];
   ensureCharts();
   if (ytChart && vtChart) {
-    ytChart.data.labels = times;
-    ytChart.data.datasets[0].data = heights;
-    vtChart.data.labels = times;
-    vtChart.data.datasets[0].data = velocities;
+    ytChart.data.datasets[0].data = buildYPoints();
+    vtChart.data.datasets[0].data = buildVPoints();
     ytChart.update();
     vtChart.update();
   }
@@ -226,12 +241,10 @@ function animate() {
     heights.push(Math.max(0, ball.position.y - size));
     velocities.push(velocity.y);
     if (ytChart && vtChart) {
-      ytChart.data.labels = times;
-      ytChart.data.datasets[0].data = heights;
-      vtChart.data.labels = times;
-      vtChart.data.datasets[0].data = velocities;
-      ytChart.update();
-      vtChart.update();
+      ytChart.data.datasets[0].data = buildYPoints();
+      vtChart.data.datasets[0].data = buildVPoints();
+      ytChart.update("none");
+      vtChart.update("none");
     }
     console.log(
       times[times.length - 1],
