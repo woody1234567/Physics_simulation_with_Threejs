@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Projectile Motion (Three.js)</title>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+        background-color: #0aa;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="ui"
+      style="
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        color: #fff;
+        font-family: sans-serif;
+        line-height: 1.4;
+      "
+    >
+      <div style="margin-bottom: 8px">
+        <label for="angle">發射角度(°): </label>
+        <input id="angle" type="range" min="0" max="85" step="1" value="30" />
+        <span id="angleVal">30°</span>
+      </div>
+      <div style="margin-bottom: 8px">
+        <label for="elasticity">彈性係數 e: </label>
+        <input
+          id="elasticity"
+          type="range"
+          min="0"
+          max="1"
+          step="0.01"
+          value="0.80"
+        />
+        <span id="elasticityVal">0.80</span>
+      </div>
+      <div style="margin-bottom: 8px">
+        <button id="restart">重新開始</button>
+      </div>
+      <div id="info">
+        t = 0.000 s<br />y = 15.000 m<br />x = 0.000 m<br />v = 0.000 m/s
+      </div>
+    </div>
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>
