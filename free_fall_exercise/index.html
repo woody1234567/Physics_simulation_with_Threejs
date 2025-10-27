@@ -61,6 +61,39 @@
         <button id="restartBtn">Restart</button>
       </div>
     </div>
+    <div
+      id="charts"
+      style="
+        position: absolute;
+        bottom: 12px;
+        right: 12px;
+        display: flex;
+        gap: 12px;
+        flex-direction: column;
+      "
+    >
+      <canvas
+        id="ytChart"
+        width="420"
+        height="220"
+        style="
+          background: rgba(255, 255, 255, 0.9);
+          border-radius: 6px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+        "
+      ></canvas>
+      <canvas
+        id="vtChart"
+        width="420"
+        height="220"
+        style="
+          background: rgba(255, 255, 255, 0.9);
+          border-radius: 6px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+        "
+      ></canvas>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="module" src="/main.js"></script>
   </body>
 </html>
