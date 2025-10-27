@@ -8,6 +8,7 @@ let t = 0;
 const dt = 0.01;
 let isFalling = false; // 等待使用者點擊 Start 後才開始
 let thickness = 0.01;
+let hasEnded = false; // 落地後結束，避免繼續恢復
 
 // === 2. 建立場景 ===
 const scene = new THREE.Scene();
@@ -179,6 +180,7 @@ const heightInput = document.getElementById("heightInput");
 const gravityInput = document.getElementById("gravityInput");
 const startBtn = document.getElementById("startBtn");
 const restartBtn = document.getElementById("restartBtn");
+const pauseBtn = document.getElementById("pauseBtn");
 
 function validateAndReadInputs() {
   const hVal = parseFloat(heightInput?.value ?? "");
@@ -199,6 +201,7 @@ function resetSimulation(newH, newG) {
   g = newG;
   t = 0;
   isFalling = false;
+  hasEnded = false;
   velocity.set(0, 0, 0);
   acceleration.set(0, -g, 0);
   ball.position.set(0, h, 0);
@@ -216,6 +219,7 @@ function resetSimulation(newH, newG) {
   info.innerHTML = `t = ${t.toFixed(3)} s<br>y = ${ball.position.y.toFixed(
     3
   )} m <br> v = ${velocity.y.toFixed(3)} m/s`;
+  if (pauseBtn) pauseBtn.textContent = "Pause";
 }
 
 function startSimulation() {
@@ -234,6 +238,8 @@ function animate() {
     if (ball.position.y - floor.position.y <= size + 0.005) {
       ball.position.y = size + 0.005;
       isFalling = false;
+      hasEnded = true;
+      if (pauseBtn) pauseBtn.textContent = "Pause";
     }
 
     // 記錄資料並更新圖表
@@ -246,11 +252,6 @@ function animate() {
       ytChart.update("none");
       vtChart.update("none");
     }
-    console.log(
-      times[times.length - 1],
-      heights[heights.length - 1],
-      velocities[velocities.length - 1]
-    );
 
     info.innerHTML = `t = ${t.toFixed(3)} s<br>y = ${ball.position.y.toFixed(
       3
@@ -267,6 +268,7 @@ if (startBtn && restartBtn && heightInput && gravityInput) {
     if (!vals) return;
     resetSimulation(vals.h, vals.g);
     startSimulation();
+    if (pauseBtn) pauseBtn.textContent = "Pause";
   });
 
   restartBtn.addEventListener("click", () => {
@@ -274,6 +276,16 @@ if (startBtn && restartBtn && heightInput && gravityInput) {
     if (!vals) return;
     resetSimulation(vals.h, vals.g);
     startSimulation();
+    if (pauseBtn) pauseBtn.textContent = "Pause";
+  });
+}
+
+// 暫停/恢復
+if (pauseBtn) {
+  pauseBtn.addEventListener("click", () => {
+    if (hasEnded) return; // 已落地結束不可恢復
+    isFalling = !isFalling;
+    pauseBtn.textContent = isFalling ? "Pause" : "Resume";
   });
 }
 
