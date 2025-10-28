@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <title>斜向拋射模擬 - Three.js</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module" src="main.js"></script>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+        background-color: #202020;
+        color: white;
+        font-family: "Microsoft JhengHei", sans-serif;
+      }
+      #ui {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        background: rgba(0, 0, 0, 0.6);
+        padding: 10px;
+        border-radius: 8px;
+        z-index: 10;
+      }
+      #charts {
+        position: fixed;
+        right: 10px;
+        bottom: 10px;
+        width: 420px;
+        height: 380px;
+        background: rgba(0, 0, 0, 0.6);
+        border-radius: 8px;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      canvas {
+        width: 100% !important;
+        height: 48% !important;
+      }
+      input,
+      button {
+        margin: 3px 0;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="ui">
+      <label
+        >初速 v₀ (m/s)：<input id="v0Input" type="number" value="30" /></label
+      ><br />
+      <label
+        >仰角 θ (°)：<input id="thetaInput" type="number" value="30" /></label
+      ><br />
+      <label
+        >重力加速度 g (m/s²)：<input
+          id="gInput"
+          type="number"
+          value="9.8" /></label
+      ><br />
+      <button id="startBtn">開始</button>
+      <button id="pauseBtn">暫停</button>
+      <button id="resetBtn">重設</button>
+      <div id="info"></div>
+    </div>
+
+    <div id="charts">
+      <canvas id="ytChart"></canvas>
+      <canvas id="xtChart"></canvas>
+    </div>
+  </body>
+</html>
