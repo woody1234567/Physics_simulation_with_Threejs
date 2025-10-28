@@ -1,8 +1,8 @@
 import * as THREE from "https://unpkg.com/three@0.165.0/build/three.module.js";
 
 const size = 0.5;
-const R = 5;
-const g = 9.8;
+let R = 5;
+let g = 9.8;
 let k = 1;
 let v0 = k * Math.sqrt(g * R);
 const dt = 0.01;
@@ -37,7 +37,8 @@ const centerMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
 const centerMesh = new THREE.Mesh(center, centerMat);
 scene.add(centerMesh);
 
-const ropeGeom = new THREE.CylinderGeometry(0.05, 0.05, R, 16);
+// 將繩子的基礎幾何高度設為 1，之後用 scale 依距離調整
+const ropeGeom = new THREE.CylinderGeometry(0.05, 0.05, 1, 16);
 const ropeMat = new THREE.MeshBasicMaterial({ color: 0xffff00 });
 const rope = new THREE.Mesh(ropeGeom, ropeMat);
 scene.add(rope);
@@ -146,6 +147,19 @@ function findAt(pos) {
 
 // ====== 重設 ======
 function resetSim() {
+  // 從 UI 讀入最新參數
+  if (typeof kInput !== "undefined" && kInput) {
+    const kv = parseFloat(kInput.value);
+    if (!isNaN(kv) && kv > 0) k = kv;
+  }
+  if (typeof rInput !== "undefined" && rInput) {
+    const rv = parseFloat(rInput.value);
+    if (!isNaN(rv) && rv > 0) R = rv;
+  }
+  if (typeof gInput !== "undefined" && gInput) {
+    const gv = parseFloat(gInput.value);
+    if (!isNaN(gv) && gv > 0) g = gv;
+  }
   t = 0;
   i = 0;
   running = false;
@@ -178,7 +192,7 @@ function animate() {
     const dir = ball.position.clone().normalize();
     const dist = ball.position.length(); // 中心(0,0,0) 到球的距離
     rope.position.copy(ball.position).multiplyScalar(0.5); // 中點
-    rope.scale.y = dist / R; // 依距離縮放高度 (若幾何高度是 1 就改成 dist/1)
+    rope.scale.y = dist; // 幾何基礎高度 1，直接縮放到 dist
     rope.quaternion.setFromUnitVectors(
       new THREE.Vector3(0, 1, 0), // cylinder 的本地 Y 軸
       dir // 指向球的方向
@@ -217,12 +231,13 @@ initCharts();
 
 // ====== 事件綁定 ======
 const kInput = document.getElementById("kInput");
+const rInput = document.getElementById("rInput");
+const gInput = document.getElementById("gInput");
 const startBtn = document.getElementById("startBtn");
 const pauseBtn = document.getElementById("pauseBtn");
 const resetBtn = document.getElementById("resetBtn");
 
 startBtn.addEventListener("click", () => {
-  k = parseFloat(kInput.value);
   resetSim();
   running = true;
 });
