@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <title>鉛直面圓周運動 Vertical Circle</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      body {
+        margin: 0;
+        background-color: black;
+        color: white;
+        font-family: sans-serif;
+        overflow: hidden;
+      }
+      #ui {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: rgba(30, 30, 30, 0.8);
+        padding: 10px;
+        border-radius: 10px;
+      }
+      canvas {
+        display: block;
+      }
+      .chart-container {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        width: 420px;
+        background: rgba(0, 0, 0, 0.8);
+        padding: 10px;
+        border-radius: 10px;
+      }
+      .chart {
+        width: 400px;
+        height: 200px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="ui">
+      <label>初速 v₀ = k·√(gR) ，k=</label>
+      <input
+        type="number"
+        id="kInput"
+        value="1"
+        step="0.1"
+        min="0.1"
+        max="7"
+        style="width: 60px"
+      />
+      <button id="startBtn">Start</button>
+      <button id="pauseBtn">Pause</button>
+      <button id="resetBtn">Reset</button>
+      <div id="info"></div>
+    </div>
+
+    <div class="chart-container">
+      <canvas id="vtChart" class="chart"></canvas>
+      <canvas id="atChart" class="chart"></canvas>
+    </div>
+
+    <script type="module" src="main.js"></script>
+  </body>
+</html>
