@@ -23,6 +23,8 @@ const camera = new THREE.PerspectiveCamera(
 camera.position.set(0, 15, 50);
 
 const simRoot = document.getElementById("sim");
+const appRoot = document.querySelector(".app");
+const splitter = document.getElementById("splitter");
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 function sizeRendererToContainer() {
   const w = simRoot?.clientWidth ?? window.innerWidth;
@@ -336,4 +338,57 @@ if (window.ResizeObserver && chartsContainer) {
     if (vtChart) vtChart.resize();
   });
   ro.observe(chartsContainer);
+}
+
+// Draggable splitter for resizing panes
+let dragging = false;
+let lastPos = 0;
+function getOrientation() {
+  const dir = getComputedStyle(appRoot || document.body).flexDirection;
+  return dir === "column" ? "column" : "row";
+}
+function updateSizesFromPointer(clientX, clientY) {
+  if (!appRoot) return;
+  const rect = appRoot.getBoundingClientRect();
+  const orientation = getOrientation();
+  const minPct = 15; // 15% min for either side
+  const maxPct = 85;
+  if (orientation === "row") {
+    const x = Math.min(Math.max(clientX - rect.left, 0), rect.width);
+    let simPct = (x / rect.width) * 100;
+    simPct = Math.min(Math.max(simPct, minPct), maxPct);
+    const sidebarPct = 100 - simPct;
+    appRoot.style.setProperty("--sim-basis", simPct + "%");
+    appRoot.style.setProperty("--sidebar-basis", sidebarPct + "%");
+  } else {
+    const y = Math.min(Math.max(clientY - rect.top, 0), rect.height);
+    let simPct = (y / rect.height) * 100;
+    simPct = Math.min(Math.max(simPct, minPct), maxPct);
+    const sidebarPct = 100 - simPct;
+    // Use heights via flex-basis percentages
+    appRoot.style.setProperty("--sim-basis", simPct + "%");
+    appRoot.style.setProperty("--sidebar-basis", sidebarPct + "%");
+  }
+  sizeRendererToContainer();
+  if (ytChart) ytChart.resize();
+  if (vtChart) vtChart.resize();
+}
+
+function onPointerMove(e) {
+  if (!dragging) return;
+  updateSizesFromPointer(e.clientX, e.clientY);
+}
+function onPointerUp() {
+  dragging = false;
+  document.body.style.userSelect = "";
+}
+if (splitter) {
+  splitter.addEventListener("pointerdown", (e) => {
+    dragging = true;
+    lastPos = e.clientX;
+    document.body.style.userSelect = "none";
+    splitter.setPointerCapture(e.pointerId);
+  });
+  window.addEventListener("pointermove", onPointerMove);
+  window.addEventListener("pointerup", onPointerUp);
 }
