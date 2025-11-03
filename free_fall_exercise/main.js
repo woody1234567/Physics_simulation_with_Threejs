@@ -22,9 +22,21 @@ const camera = new THREE.PerspectiveCamera(
 );
 camera.position.set(0, 15, 50);
 
+const simRoot = document.getElementById("sim");
 const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
+function sizeRendererToContainer() {
+  const w = simRoot?.clientWidth ?? window.innerWidth;
+  const hpx = simRoot?.clientHeight ?? window.innerHeight;
+  renderer.setSize(w, hpx);
+  camera.aspect = w / hpx;
+  camera.updateProjectionMatrix();
+}
+sizeRendererToContainer();
+if (simRoot) {
+  simRoot.appendChild(renderer.domElement);
+} else {
+  document.body.appendChild(renderer.domElement);
+}
 
 // 地板
 const floorGeometry = new THREE.BoxGeometry(40, thickness, 40);
@@ -114,6 +126,7 @@ function ensureCharts() {
       },
       options: {
         responsive: true,
+        maintainAspectRatio: false,
         animation: true,
         scales: {
           x: {
@@ -121,14 +134,21 @@ function ensureCharts() {
             title: { display: true, text: "t (s)" },
             min: 0,
             max: Math.max(1, tMax),
+            ticks: { maxTicksLimit: 6, autoSkip: true },
           },
           y: {
             title: { display: true, text: "y (m)" },
             min: 0,
             max: Math.max(1, h),
+            ticks: { maxTicksLimit: 6, autoSkip: true },
           },
         },
-        plugins: { legend: { display: true } },
+        plugins: {
+          legend: {
+            display: true,
+            labels: { boxWidth: 12, color: "#333" },
+          },
+        },
       },
     });
   } else {
@@ -155,6 +175,7 @@ function ensureCharts() {
       },
       options: {
         responsive: true,
+        maintainAspectRatio: false,
         animation: true,
         scales: {
           x: {
@@ -162,12 +183,19 @@ function ensureCharts() {
             title: { display: true, text: "t (s)" },
             min: 0,
             max: Math.max(1, tMax),
+            ticks: { maxTicksLimit: 6, autoSkip: true },
           },
           y: {
             title: { display: true, text: "v (m/s)" },
+            ticks: { maxTicksLimit: 6, autoSkip: true },
           },
         },
-        plugins: { legend: { display: true } },
+        plugins: {
+          legend: {
+            display: true,
+            labels: { boxWidth: 12, color: "#333" },
+          },
+        },
       },
     });
   } else {
@@ -295,7 +323,17 @@ animate();
 
 // 視窗縮放自適應
 window.addEventListener("resize", () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  sizeRendererToContainer();
+  if (ytChart) ytChart.resize();
+  if (vtChart) vtChart.resize();
 });
+
+// ResizeObserver to handle container-only resizes (e.g., media query/flex changes)
+const chartsContainer = document.getElementById("charts");
+if (window.ResizeObserver && chartsContainer) {
+  const ro = new ResizeObserver(() => {
+    if (ytChart) ytChart.resize();
+    if (vtChart) vtChart.resize();
+  });
+  ro.observe(chartsContainer);
+}

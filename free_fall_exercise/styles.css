@@ -1,0 +1,149 @@
+:root {
+  --bg: #0d1b1e;
+  --panel: #0f2a30;
+  --panel-accent: #123940;
+  --text: #e6f2f2;
+}
+html, body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+}
+/* Two-column layout */
+.app {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+#sim {
+  position: relative;
+  flex: 0 0 70%;
+  height: 100%;
+  background: #008080; /* kept to match scene background */
+}
+#sidebar {
+  flex: 0 0 30%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  background: linear-gradient(180deg, var(--panel), var(--panel-accent));
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
+  overflow: auto;
+}
+/* Overlays inside simulation */
+#info {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  color: white;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  background: rgba(0,0,0,0.35);
+  padding: 8px 10px;
+  border-radius: 6px;
+  backdrop-filter: blur(2px);
+}
+#controls {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: #fff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 10px;
+  border-radius: 6px;
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 8px 10px;
+  align-items: center;
+  backdrop-filter: blur(2px);
+}
+#controls input {
+  width: 90px;
+}
+#controls button {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  cursor: pointer;
+}
+#controls button:hover {
+  background: rgba(255,255,255,0.18);
+}
+/* Charts */
+#charts {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+}
+.chart-card {
+  background: rgba(255,255,255,0.9);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* allow flex children to shrink */
+}
+.chart-card canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+/* Split sidebar space between two charts */
+.chart-half {
+  flex: 1 1 0;
+  min-height: 0;
+}
+
+/* Responsive: stack vertically on narrow screens */
+@media (max-width: 1024px) {
+  .app {
+    flex-direction: column;
+  }
+  #sim {
+    flex: 0 0 60vh; /* give sim prominence */
+    width: 100%;
+    height: 60vh;
+  }
+  #sidebar {
+    flex: 1 1 auto;
+    height: 40vh;
+    width: 100%;
+  }
+}
+
+@media (max-width: 720px) {
+  #controls {
+    grid-template-columns: 1fr 1fr; /* two columns */
+    gap: 6px 8px;
+  }
+  #controls input {
+    width: 100%;
+  }
+  #controls button {
+    padding: 6px 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  #controls {
+    grid-template-columns: 1fr; /* single column for tiny screens */
+    left: 10px;
+    right: 10px;
+  }
+  #sim {
+    height: 55vh;
+  }
+  #sidebar {
+    height: 45vh;
+  }
+}
